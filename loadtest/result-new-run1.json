@@ -1,0 +1,22 @@
+{
+  "requests": 1000,
+  "concurrency": 50,
+  "wall_seconds": 1.19,
+  "requests_per_second": 838.8,
+  "latency_ms": {
+    "p50": 53.8,
+    "p95": 101.9,
+    "p99": 148.5,
+    "mean": 57.3,
+    "max": 168.1
+  },
+  "error_rate_percent": 0.0,
+  "status_counts": {
+    "201": 1000
+  },
+  "machine": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpus": 24,
+    "python": "3.12.7"
+  }
+}

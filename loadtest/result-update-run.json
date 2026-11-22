@@ -1,18 +1,18 @@
 {
   "requests": 1000,
   "concurrency": 50,
-  "wall_seconds": 1.44,
-  "requests_per_second": 694.7,
+  "wall_seconds": 0.93,
+  "requests_per_second": 1079.2,
   "latency_ms": {
-    "p50": 53.6,
-    "p95": 287.1,
-    "p99": 328.3,
-    "mean": 69.8,
-    "max": 349.5
+    "p50": 44.5,
+    "p95": 50.1,
+    "p99": 52.0,
+    "mean": 44.3,
+    "max": 53.0
   },
   "error_rate_percent": 0.0,
   "status_counts": {
-    "201": 1000
+    "200": 1000
   },
   "machine": {
     "os": "Windows-11-10.0.26200-SP0",
