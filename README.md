@@ -2,11 +2,13 @@
 
 Daily meal reporting and anomaly detection for school and Anganwadi feeding programs: a Spring Boot API, PostgreSQL, and a React dashboard.
 
+![CI](https://github.com/ParthChauhan1658/mealtrack/actions/workflows/ci.yml/badge.svg)
+
 > **Demo with synthetic data.** Every number in this project comes from a seed script. This is a portfolio project, **not affiliated with Feeding India**, and it contains no real centres or children. The ~1.4 lakh meals/day scale was chosen to mirror the scale described in the hiring post.
 
 **Live demo:** not deployed yet (see [Deployment](#deployment)).
 
-<!-- TODO(parth): add live URL and CI badge -->
+<!-- TODO(parth): add live URL after deploying -->
 
 ![Dashboard (desktop)](docs/dashboard-desktop.png)
 
@@ -101,7 +103,7 @@ Notes on judgement calls:
 cd dashboard && npm test         # dashboard logic
 ```
 
-CI: `.github/workflows/ci.yml` runs the backend tests on JDK 21 and the dashboard tests and build on every push. It has not run yet because the repo has not been pushed; the badge will be added then.
+CI: `.github/workflows/ci.yml` runs the backend tests on JDK 21 and the dashboard tests and build on every push. It passes on `main` (see the badge at the top).
 
 Backend tests: **176 backend tests** (unit, MockMvc API, and integration tests against real PostgreSQL; `./mvnw clean test`, all passing) plus **9 dashboard tests** (`npm test`), counted from a clean build on 2026-11-22. They include boundary cases for every rule (exactly 60%, 140%, 150%), a 26-message table-driven test for the rule-based parser, the report race condition, alert uniqueness, `MissingReportJob` idempotency, and summary aggregation.
 
