@@ -17,8 +17,15 @@ services:
         sync: false
       - key: LLM_PROVIDER
         value: none
+      - key: CUTOFF_TIME
+        value: "14:00"
+      # Public demo has no live reporters, so the daily job would flag every centre as missing. "-" disables it.
+      - key: MISSING_REPORT_CRON
+        value: "-"
+      - key: DB_POOL_SIZE
+        value: "5"
       - key: CORS_ORIGIN
-        sync: false # the dashboard's URL; only needed if the browser calls the API cross-origin
+        sync: false # the dashboard's URL, e.g. https://mealtrack-dashboard.onrender.com (no trailing slash)
 
   - type: web
     name: mealtrack-dashboard
@@ -26,11 +33,12 @@ services:
     rootDir: dashboard
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
+    envVars:
+      # Build-time: the dashboard calls the API directly, so the API's CORS_ORIGIN must be this site's URL.
+      # Change it if Render gives the API service a different URL than the name below.
+      - key: VITE_API_BASE_URL
+        value: https://mealtrack-api.onrender.com
     routes:
-      # Keeps the dashboard same-origin: /api/* is forwarded to the API service.
-      - type: rewrite
-        source: /api/*
-        destination: https://mealtrack-api.onrender.com/api/*
       - type: rewrite
         source: /*
         destination: /index.html
