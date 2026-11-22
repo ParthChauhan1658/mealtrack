@@ -7,8 +7,8 @@ type Result =
   | { kind: "error"; message: string };
 
 const SAMPLES = [
-  "aaj 180 bachchon ko khana diya, 20 absent the",
-  "Meals served today: 1,250",
+  "aaj 80 bachchon ko khana diya, 5 absent the",
+  "Meals served today: 82",
   "served 95 kids, 12 absent, total enrolled 107",
   "khana nahi bana aaj, gas khatam",
 ];
