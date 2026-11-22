@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 /** Boundary tests for each rule, using the default thresholds. */
 class AnomalyRulesTest {
     final MealtrackProperties props = new MealtrackProperties("k", "http://x",
-            new MealtrackProperties.Validation(7, 2.0), MealtrackProperties.Anomaly.defaults());
+            new MealtrackProperties.Validation(7, 2.0), MealtrackProperties.Anomaly.defaults(), MealtrackProperties.Llm.defaults());
     final SuddenDropRule drop = new SuddenDropRule(props);
     final SpikeRule spike = new SpikeRule(props);
     final ExceedsCapacityRule capacity = new ExceedsCapacityRule(props);
@@ -82,7 +82,7 @@ class AnomalyRulesTest {
     @CsvSource({"0.50,55,false", "0.50,49,true", "0.80,79,true", "0.80,80,false"})
     void dropRatioIsConfigurable(double ratio, int served, boolean fires) {
         var cfg = new MealtrackProperties.Anomaly(ratio, 0.1, 1.4, 1.5, 7, 3, "14:00", "0 0 14 * * MON-SAT");
-        var rule = new SuddenDropRule(new MealtrackProperties("k", "x", new MealtrackProperties.Validation(7, 2.0), cfg));
+        var rule = new SuddenDropRule(new MealtrackProperties("k", "x", new MealtrackProperties.Validation(7, 2.0), cfg, MealtrackProperties.Llm.defaults()));
         assertEquals(fires, rule.evaluate(ctx(100, served)).isPresent());
     }
 }
