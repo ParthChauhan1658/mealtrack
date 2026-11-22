@@ -23,7 +23,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     ResponseEntity<Map<String, Object>> api(ApiException e, HttpServletRequest req) {
-        return body(e.getStatus(), e.getMessage(), req);
+        var response = body(e.getStatus(), e.getMessage(), req);
+        if (e instanceof ParseUncertainException u) {
+            // Lets the dashboard show what was understood even though nothing was saved.
+            var p = u.getParsed();
+            Map<String, Object> parsed = new LinkedHashMap<>();
+            parsed.put("mealsServed", p.mealsServed());
+            parsed.put("date", p.date());
+            parsed.put("parseMethod", p.method());
+            parsed.put("confidence", p.confidence());
+            response.getBody().put("parsed", parsed);
+        }
+        return response;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
