@@ -22,8 +22,8 @@ class ReportValidationTest {
     static final LocalDate TODAY = LocalDate.of(2026, 11, 22);
 
     final ReportService service = new ReportService(mock(CentreRepository.class), mock(MealReportRepository.class),
-            new MealtrackProperties("k", "http://x", new MealtrackProperties.Validation(7, 2.0)),
-            Clock.fixed(Instant.parse("2026-11-22T06:00:00Z"), IST), mock(PlatformTransactionManager.class));
+            new MealtrackProperties("k", "http://x", new MealtrackProperties.Validation(7, 2.0), MealtrackProperties.Anomaly.defaults()),
+            Clock.fixed(Instant.parse("2026-11-22T06:00:00Z"), IST), mock(AnomalyService.class), mock(PlatformTransactionManager.class));
 
     final Centre centre = new Centre("C-1", "c", CentreType.SCHOOL, "D", "B", 100);
 

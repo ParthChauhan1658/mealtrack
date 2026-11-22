@@ -25,14 +25,16 @@ public class ReportService {
     private final MealReportRepository reports;
     private final MealtrackProperties props;
     private final Clock clock;
+    private final AnomalyService anomaly;
     private final TransactionTemplate tx;
 
     public ReportService(CentreRepository centres, MealReportRepository reports, MealtrackProperties props,
-                         Clock clock, PlatformTransactionManager txManager) {
+                         Clock clock, AnomalyService anomaly, PlatformTransactionManager txManager) {
         this.centres = centres;
         this.reports = reports;
         this.props = props;
         this.clock = clock;
+        this.anomaly = anomaly;
         this.tx = new TransactionTemplate(txManager);
     }
 
@@ -88,6 +90,8 @@ public class ReportService {
         report.setRawMessage(rawMessage);
         report.setParseMethod(parseMethod);
         // saveAndFlush so a unique violation surfaces inside this transaction template, where we can retry.
-        return new SubmitResult(reports.saveAndFlush(report), created);
+        MealReport saved = reports.saveAndFlush(report);
+        anomaly.evaluate(saved); // same transaction: report and its alerts commit together
+        return new SubmitResult(saved, created);
     }
 }
