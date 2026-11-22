@@ -1,0 +1,7 @@
+target/
+.git/
+.env
+dashboard/
+loadtest/
+docs/
+*.md

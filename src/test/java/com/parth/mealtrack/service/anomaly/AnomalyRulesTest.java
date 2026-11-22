@@ -45,6 +45,7 @@ class AnomalyRulesTest {
         assertTrue(drop.evaluate(new AnomalyContext(100, 10, List.of(100, 100))).isEmpty());
         assertTrue(drop.evaluate(new AnomalyContext(100, 10, List.of(100, 100, 100))).isPresent());
     }
+    @Test void zeroMealsIsLeftToTheZeroMealsRule() { assertTrue(drop.evaluate(ctx(100, 0)).isEmpty()); }
     @Test void dropWithNoHistoryDoesNotFire() { assertTrue(drop.evaluate(new AnomalyContext(100, 0, List.of())).isEmpty()); }
 
     // --- SPIKE ---

@@ -59,8 +59,7 @@ class SeedDataRunnerTest extends PostgresTestBase {
         assertEquals(40, count(AlertType.MISSING_REPORT));
         assertEquals(5, count(AlertType.ZERO_MEALS));
         assertEquals(5, count(AlertType.SPIKE));
-        // 10 injected drops, plus the 5 zero-meal centres which also read as a drop to 0% of their average
-        assertEquals(15, count(AlertType.SUDDEN_DROP));
+        assertEquals(10, count(AlertType.SUDDEN_DROP)); // zero-meal centres get ZERO_MEALS only
         assertTrue(count(AlertType.EXCEEDS_CAPACITY) <= 5);
         assertEquals(0, count(AlertType.PARSE_UNCERTAIN));
     }
@@ -80,7 +79,7 @@ class SeedDataRunnerTest extends PostgresTestBase {
         assertEquals(960, s.centresReported());
         assertEquals(96.0, s.coveragePercent());
         assertEquals(8, s.byDistrict().size());
-        assertTrue(s.openAlerts() >= 40 + 5 + 5 + 15);
+        assertTrue(s.openAlerts() >= 40 + 5 + 5 + 10);
     }
 
     @Test

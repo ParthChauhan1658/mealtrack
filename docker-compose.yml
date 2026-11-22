@@ -14,5 +14,43 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  api:
+    build: .
+    environment: &api-env
+      DB_URL: jdbc:postgresql://db:5432/mealtrack
+      DB_USER: ${DB_USER:-mealtrack}
+      DB_PASSWORD: ${DB_PASSWORD:-mealtrack}
+      MEALTRACK_API_KEY: ${MEALTRACK_API_KEY:?set MEALTRACK_API_KEY in .env}
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      CUTOFF_TIME: ${CUTOFF_TIME:-14:00}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  dashboard:
+    build: ./dashboard
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+
+  # One-off: docker compose run --rm seed
+  seed:
+    build: .
+    profiles: ["seed"]
+    environment:
+      <<: *api-env
+      SPRING_PROFILES_ACTIVE: seed
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+      MEALTRACK_SEED_EXIT_WHEN_DONE: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   dbdata:
