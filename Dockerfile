@@ -4,7 +4,7 @@ FROM eclipse-temurin:21-jdk AS build
 WORKDIR /workspace
 COPY mvnw pom.xml ./
 COPY .mvn .mvn
-RUN chmod +x mvnw && ./mvnw -B -q dependency:go-offline
+RUN chmod +x mvnw && ./mvnw -B dependency:go-offline
 COPY src src
 RUN ./mvnw -B -q -DskipTests package && mv target/mealtrack-*.jar app.jar
 
