@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface AlertRepository extends JpaRepository<Alert, Long>, JpaSpecificationExecutor<Alert> {
 
+    long countByStatus(com.parth.mealtrack.domain.AlertStatus status);
+
     /**
      * Race-safe create. A second call for the same (centre, date, type) never inserts a duplicate: an OPEN alert
      * gets its severity/message refreshed, a RESOLVED one is left alone.

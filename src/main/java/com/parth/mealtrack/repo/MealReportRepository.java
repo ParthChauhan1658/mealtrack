@@ -19,6 +19,14 @@ public interface MealReportRepository extends JpaRepository<MealReport, Long> {
             + "order by r.reportDate desc")
     List<Integer> recentMeals(@Param("centreId") Long centreId, @Param("date") LocalDate date, Pageable limit);
 
+    /** Daily totals over active centres; days with no reports are absent from the result. */
+    @Query("""
+            select r.reportDate as date, sum(r.mealsServed) as meals, count(r) as reported
+            from MealReport r where r.centre.active = true and r.reportDate between :from and :to
+            group by r.reportDate order by r.reportDate
+            """)
+    List<TrendRow> dailyTotals(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
     @Query("select r from MealReport r join fetch r.centre where r.centre.id = :centreId "
             + "and r.reportDate >= :from and r.reportDate <= :to order by r.reportDate")
     List<MealReport> findHistory(@Param("centreId") Long centreId, @Param("from") LocalDate from,
