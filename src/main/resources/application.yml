@@ -12,6 +12,13 @@ spring:
   flyway:
     enabled: true
 
+mealtrack:
+  api-key: ${MEALTRACK_API_KEY:}
+  cors-origin: ${CORS_ORIGIN:http://localhost:5173}
+  validation:
+    max-age-days: 7
+    reject-factor: 2.0
+
 management:
   endpoints:
     web:

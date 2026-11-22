@@ -3,6 +3,7 @@ package com.parth.mealtrack.domain;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "meal_report")
@@ -47,13 +48,14 @@ public class MealReport {
 
     @PrePersist
     void onCreate() {
-        createdAt = Instant.now();
+        // PostgreSQL stores microseconds; truncate so the API returns what a re-read would.
+        createdAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
         updatedAt = createdAt;
     }
 
     @PreUpdate
     void onUpdate() {
-        updatedAt = Instant.now();
+        updatedAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
     }
 
     public Long getId() { return id; }

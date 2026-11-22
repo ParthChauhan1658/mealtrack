@@ -27,13 +27,13 @@ class CentreApiTest extends PostgresTestBase {
     }
 
     private void create(String code, String district, int meals) throws Exception {
-        mvc.perform(post("/api/centres").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/centres").header("X-API-Key", API_KEY).contentType(MediaType.APPLICATION_JSON)
                 .content(json(code, "SCHOOL", district, meals))).andExpect(status().isCreated());
     }
 
     @Test
     void createsAndFetchesCentre() throws Exception {
-        var res = mvc.perform(post("/api/centres").contentType(MediaType.APPLICATION_JSON)
+        var res = mvc.perform(post("/api/centres").header("X-API-Key", API_KEY).contentType(MediaType.APPLICATION_JSON)
                         .content(json("T-0001", "ANGANWADI", "Rohtak", 40)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value("T-0001"))
@@ -47,7 +47,7 @@ class CentreApiTest extends PostgresTestBase {
     @Test
     void duplicateCodeIsConflict() throws Exception {
         create("T-0002", "Rohtak", 100);
-        mvc.perform(post("/api/centres").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/centres").header("X-API-Key", API_KEY).contentType(MediaType.APPLICATION_JSON)
                         .content(json("T-0002", "SCHOOL", "Rohtak", 100)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
@@ -56,7 +56,7 @@ class CentreApiTest extends PostgresTestBase {
 
     @Test
     void invalidBodyIsBadRequestWithConsistentShape() throws Exception {
-        mvc.perform(post("/api/centres").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/centres").header("X-API-Key", API_KEY).contentType(MediaType.APPLICATION_JSON)
                         .content(json("", "SCHOOL", "Rohtak", 0)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.timestamp").exists())
@@ -66,7 +66,7 @@ class CentreApiTest extends PostgresTestBase {
 
     @Test
     void unknownEnumValueIsBadRequest() throws Exception {
-        mvc.perform(post("/api/centres").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/centres").header("X-API-Key", API_KEY).contentType(MediaType.APPLICATION_JSON)
                         .content(json("T-0003", "FACTORY", "Rohtak", 10)))
                 .andExpect(status().isBadRequest());
     }
