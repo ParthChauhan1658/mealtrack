@@ -37,7 +37,7 @@ services:
       # Build-time: the dashboard calls the API directly, so the API's CORS_ORIGIN must be this site's URL.
       # Change it if Render gives the API service a different URL than the name below.
       - key: VITE_API_BASE_URL
-        value: https://mealtrack-api.onrender.com
+        value: https://mealtrack-api-334n.onrender.com
     routes:
       - type: rewrite
         source: /*

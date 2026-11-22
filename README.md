@@ -6,9 +6,7 @@ Daily meal reporting and anomaly detection for school and Anganwadi feeding prog
 
 > **Demo with synthetic data.** Every number in this project comes from a seed script. This is a portfolio project, **not affiliated with Feeding India**, and it contains no real centres or children. The ~1.4 lakh meals/day scale was chosen to mirror the scale described in the hiring post.
 
-**Live demo:** not deployed yet (see [Deployment](#deployment)).
-
-<!-- TODO(parth): add live URL after deploying -->
+**Live demo:** https://mealtrack-dashboard.onrender.com (API: https://mealtrack-api-334n.onrender.com, [Swagger UI](https://mealtrack-api-334n.onrender.com/swagger-ui/index.html)). Free-tier hosting: the first request after a quiet period can take about a minute while the API wakes up.
 
 ![Dashboard (desktop)](docs/dashboard-desktop.png)
 
@@ -144,7 +142,7 @@ Caveats: each run lasts only about one second, the load generator and system und
 
 ## Deployment
 
-Planned, not done yet: API as a Docker web service and the dashboard as a static site on Render (`render.yaml`), with a free Neon PostgreSQL database (Render's own free Postgres expires after 30 days). Step-by-step instructions, free-tier caveats and a smoke-test checklist are in [`docs/DEPLOY.md`](docs/DEPLOY.md). Judgement calls and the raw verification output are in [`docs/DECISIONS.md`](docs/DECISIONS.md).
+Deployed: API as a Docker web service and the dashboard as a static site on Render (`render.yaml`), with a free Neon PostgreSQL database (Render's own free Postgres expires after 30 days). Step-by-step instructions, free-tier caveats and a smoke-test checklist are in [`docs/DEPLOY.md`](docs/DEPLOY.md). Judgement calls and the raw verification output are in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ## Limitations and future work
 
