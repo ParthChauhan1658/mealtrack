@@ -4,7 +4,7 @@
 Standard library only. Uses the seeded centres (run the seed first), one report per centre, dated today,
 with meals equal to each centre's expected_meals so every request is valid.
 
-    python loadtest/load_test.py --base-url http://localhost:8080 --api-key local-demo-key
+    python loadtest/load_test.py --base-url http://localhost:8080 --api-key <your MEALTRACK_API_KEY>
 """
 import argparse
 import http.client
