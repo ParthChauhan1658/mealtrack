@@ -49,4 +49,27 @@ public interface AlertRepository extends JpaRepository<Alert, Long>, JpaSpecific
             """)
     int resolveOpen(@Param("centreId") Long centreId, @Param("date") LocalDate date,
                     @Param("types") Collection<AlertType> types);
+
+    /**
+     * One set-based statement for every active centre with no report on {@code date}. HIGH if the centre also has no
+     * report on {@code previousDate}, else LOW. Existing alerts (any status) are never touched, so reruns add nothing.
+     */
+    @Transactional
+    @Modifying
+    @Query(value = """
+            INSERT INTO alert (centre_id, report_date, type, severity, message, status, created_at)
+            SELECT c.id, :date, 'MISSING_REPORT',
+                   CASE WHEN EXISTS (SELECT 1 FROM meal_report p WHERE p.centre_id = c.id AND p.report_date = :previousDate)
+                        THEN 'LOW' ELSE 'HIGH' END,
+                   CASE WHEN EXISTS (SELECT 1 FROM meal_report p WHERE p.centre_id = c.id AND p.report_date = :previousDate)
+                        THEN :messageFirst ELSE :messageRepeat END,
+                   'OPEN', now()
+            FROM centre c
+            WHERE c.active
+              AND NOT EXISTS (SELECT 1 FROM meal_report r WHERE r.centre_id = c.id AND r.report_date = :date)
+            ON CONFLICT (centre_id, report_date, type) DO NOTHING
+            """, nativeQuery = true)
+    int insertMissingReportAlerts(@Param("date") LocalDate date, @Param("previousDate") LocalDate previousDate,
+                                  @Param("messageFirst") String messageFirst,
+                                  @Param("messageRepeat") String messageRepeat);
 }

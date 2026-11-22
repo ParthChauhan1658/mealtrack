@@ -26,7 +26,7 @@ mealtrack:
     window-days: 7            # reported days used for the average
     min-history-days: 3       # drop/spike rules need at least this many days of history
     cutoff-time: ${CUTOFF_TIME:14:00}   # IST; no report by now means MISSING_REPORT
-    missing-report-cron: "0 30 14 * * MON-SAT"
+    missing-report-cron: "0 0 14 * * MON-SAT"   # run at the cutoff, IST, no Sunday reports expected
 
 management:
   endpoints:

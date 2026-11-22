@@ -81,7 +81,7 @@ class AnomalyRulesTest {
     @ParameterizedTest
     @CsvSource({"0.50,55,false", "0.50,49,true", "0.80,79,true", "0.80,80,false"})
     void dropRatioIsConfigurable(double ratio, int served, boolean fires) {
-        var cfg = new MealtrackProperties.Anomaly(ratio, 0.1, 1.4, 1.5, 7, 3, "14:00", "0 30 14 * * MON-SAT");
+        var cfg = new MealtrackProperties.Anomaly(ratio, 0.1, 1.4, 1.5, 7, 3, "14:00", "0 0 14 * * MON-SAT");
         var rule = new SuddenDropRule(new MealtrackProperties("k", "x", new MealtrackProperties.Validation(7, 2.0), cfg));
         assertEquals(fires, rule.evaluate(ctx(100, served)).isPresent());
     }

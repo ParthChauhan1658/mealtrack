@@ -24,10 +24,10 @@ public record MealtrackProperties(
             @DefaultValue("7") int windowDays,
             @DefaultValue("3") int minHistoryDays,
             @DefaultValue("14:00") String cutoffTime,
-            @DefaultValue("0 30 14 * * MON-SAT") String missingReportCron) {
+            @DefaultValue("0 0 14 * * MON-SAT") String missingReportCron) {
 
         public static Anomaly defaults() {
-            return new Anomaly(0.60, 0.40, 1.40, 1.5, 7, 3, "14:00", "0 30 14 * * MON-SAT");
+            return new Anomaly(0.60, 0.40, 1.40, 1.5, 7, 3, "14:00", "0 0 14 * * MON-SAT");
         }
     }
 }

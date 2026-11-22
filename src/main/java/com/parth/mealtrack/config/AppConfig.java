@@ -5,10 +5,12 @@ import java.time.ZoneId;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@EnableScheduling
 @EnableConfigurationProperties(MealtrackProperties.class)
 public class AppConfig implements WebMvcConfigurer {
     private final MealtrackProperties props;
