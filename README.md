@@ -4,7 +4,9 @@ Daily meal reporting and anomaly detection for school and Anganwadi feeding prog
 
 > **Demo with synthetic data.** Every number in this project comes from a seed script. This is a portfolio project, **not affiliated with Feeding India**, and it contains no real centres or children. The ~1.4 lakh meals/day scale was chosen to mirror the scale described in the hiring post.
 
-**Live demo:** _not deployed yet_ (see [Deployment](#deployment)).
+**Live demo:** not deployed yet (see [Deployment](#deployment)).
+
+<!-- TODO(parth): add live URL and CI badge -->
 
 ![Dashboard (desktop)](docs/dashboard-desktop.png)
 
@@ -99,9 +101,9 @@ Notes on judgement calls:
 cd dashboard && npm test         # dashboard logic
 ```
 
-CI badge: _add after the repo is pushed_ (`.github/workflows/ci.yml` runs `./mvnw verify` on every push).
+CI: `.github/workflows/ci.yml` runs the backend tests on JDK 21 and the dashboard tests and build on every push. It has not run yet because the repo has not been pushed; the badge will be added then.
 
-Backend tests: **175 tests** (unit, MockMvc API, and integration tests against real PostgreSQL), plus 9 dashboard tests. They include boundary cases for every rule (exactly 60%, 140%, 150%), a 26-message table-driven test for the rule-based parser, the report race condition, alert uniqueness, `MissingReportJob` idempotency, and summary aggregation.
+Backend tests: **176 backend tests** (unit, MockMvc API, and integration tests against real PostgreSQL; `./mvnw clean test`, all passing) plus **9 dashboard tests** (`npm test`), counted from a clean build on 2026-11-22. They include boundary cases for every rule (exactly 60%, 140%, 150%), a 26-message table-driven test for the rule-based parser, the report race condition, alert uniqueness, `MissingReportJob` idempotency, and summary aggregation.
 
 **LLM caveat:** the Claude and Gemini clients have been tested **only against a local stub HTTP server** (success, 429/5xx, 401, timeout, bad output, missing key). They have not been run against a real provider API with a real key, and the default model IDs are unverified against the live APIs. The fallback path is what the live demo uses.
 
@@ -117,28 +119,36 @@ Measured from a seeded run: a normal weekday totals **140,535** meals (Friday 20
 
 ## Load test
 
-`loadtest/load_test.py` (Python standard library only) submits 1,000 reports to `POST /api/reports`, one per seeded centre, with 50 concurrent workers. Each request does the full path: auth, validation, idempotent upsert and anomaly evaluation in one transaction.
+`loadtest/load_test.py` (Python standard library only) submits 1,000 reports to `POST /api/reports`, one per seeded centre, with 50 concurrent workers. Each request is the full path: API-key check, validation, idempotent upsert and anomaly evaluation in one transaction.
 
 ```bash
-python loadtest/load_test.py --base-url http://localhost:8080 --api-key <your key>
+python loadtest/load_test.py --base-url http://localhost:8080 --api-key <your MEALTRACK_API_KEY>
 ```
 
-Measured on my own machine (Intel Core i7-14650HX, 24 logical CPUs, 23.6 GB RAM, Windows 11). The API and PostgreSQL ran as Docker containers from `docker-compose.yml`; the load generator ran on the host. Raw output is in `loadtest/result-run1.json` and `result-run2.json`.
+**Setup (measured 2026-11-22):** Intel Core i7-14650HX, 24 logical cores, 23.6 GB RAM, Windows 11 Home (10.0.26200), Docker Engine 29.8.1. The API and PostgreSQL 16 ran in Docker containers from `docker-compose.yml` with no resource limits; the load generator (Python 3.12.7) ran on the same host. The database was freshly seeded, and before each run I deleted that day's reports so every run did identical work.
 
-| Run | What it exercises | Requests/s | p50 | p95 | p99 | Error rate |
-|---|---|---|---|---|---|---|
-| 1 (first run, cold JVM) | 1,000 new reports (all `201`) | 694.7 | 53.6 ms | 287.1 ms | 328.3 ms | 0.00% |
-| 2 (immediately after) | 1,000 updates of those reports (all `200`) | 1002.2 | 48.2 ms | 52.8 ms | 55.5 ms | 0.00% |
+Three runs, each 1,000 new reports (all `201`, 0 errors):
 
-Caveats: each run lasts only 1-1.4 seconds, so treat these as indicative, not a capacity claim. It was a single run per case on one machine, the load generator shared the machine with the system under test, and the data set is the synthetic seed. The slow p95/p99 in run 1 is a cold JVM and a cold connection pool; run 2 shows the warmed-up figure.
+| Run | Requests/s | p50 | p95 | p99 | Error rate |
+|---|---|---|---|---|---|
+| 1 | 838.8 | 53.8 ms | 101.9 ms | 148.5 ms | 0.00% |
+| 2 | 948.5 | 51.2 ms | 56.3 ms | 61.4 ms | 0.00% |
+| 3 | 983.6 | 48.9 ms | 54.2 ms | 57.3 ms | 0.00% |
+| **Median** | **948.5** | **51.2 ms** | **56.3 ms** | **61.4 ms** | **0.00%** |
+
+One extra pass over the same centres (1,000 updates, all `200`): 1,079.2 requests/s, p50 44.5 ms, p95 50.1 ms, p99 52.0 ms, 0.00% errors. Raw output is in `loadtest/result-*.json`.
+
+Caveats: each run lasts only about one second, the load generator and system under test share one machine, there are three runs, and the data is synthetic. Treat this as an indication of per-request cost, not a capacity claim. Run 1 is slower mostly because the connection pool and JIT are still warming up.
 
 ## Deployment
 
-Planned: API as a Docker web service and the dashboard as a static site on Render (`render.yaml`), with a free Neon PostgreSQL database. Render's own free Postgres expires after 30 days, which is why Neon is used for the database. Not deployed yet; the live link will go at the top once it is.
+Planned, not done yet: API as a Docker web service and the dashboard as a static site on Render (`render.yaml`), with a free Neon PostgreSQL database (Render's own free Postgres expires after 30 days). Step-by-step instructions, free-tier caveats and a smoke-test checklist are in [`docs/DEPLOY.md`](docs/DEPLOY.md). Judgement calls and the raw verification output are in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ## Limitations and future work
 
 - One shared API key instead of real users and roles.
+- All data is synthetic, and the Claude/Gemini clients have only been exercised against a local stub server.
+- The scheduled missing-report job assumes real reporters; on a demo with synthetic data it should be disabled (`MISSING_REPORT_CRON=-`).
 - WhatsApp is simulated by the message box; there is no Twilio/Cloud API integration.
 - Numbers in messages only: no photo/OCR parsing, no spelled-out Hindi numerals.
 - Late corrections older than 7 days need an admin path that doesn't exist yet.
