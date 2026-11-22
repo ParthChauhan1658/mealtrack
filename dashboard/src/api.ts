@@ -1,5 +1,5 @@
-// Thin typed wrapper over fetch. Same-origin by default (dev proxy / nginx); override with VITE_API_BASE.
-const BASE: string = import.meta.env.VITE_API_BASE ?? "";
+// Thin typed wrapper over fetch. Same-origin by default (dev proxy / nginx); override with VITE_API_BASE_URL (build time; then the API must allow this origin via CORS_ORIGIN).
+const BASE: string = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export type Severity = "LOW" | "MEDIUM" | "HIGH";
 export type AlertType =
